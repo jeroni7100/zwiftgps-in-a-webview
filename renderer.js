@@ -4,9 +4,9 @@
 
 
 const {ipcRenderer} = require('electron')
-const hasFlag = require('electron').remote.require('has-flag')
+// const hasFlag = require('electron').remote.require('has-flag')
 const argv = require('minimist')(require('electron').remote.process.argv.slice(2));
-console.dir(argv);
+// console.dir(argv);
 
 var myWebview = document.getElementById('foo');
 
@@ -27,24 +27,37 @@ let riderProfile
 function hideElements() {
   myWebview.executeJavaScript("b = document.querySelectorAll('button.app-button, .ghosts, .info-panel, div.strava-connected'); if (b) {  b.forEach(function(s) { document.querySelector('div.menu-content').click();  s.classList.add('zh-hidden'); }); }");
 }
+
+function showElements() {
+  myWebview.executeJavaScript("b = document.querySelectorAll('.zh-hidden'); if (b) { b.forEach(function(s) {  s.classList.remove('zh-hidden'); }); }");
+}
+
+function closeMenu() {
+  myWebview.executeJavaScript("document.querySelector('div.menu-content').click();")
+}
+
 function setOpacity(opacity) {
   myWebview.executeJavaScript(`console.log(${opacity});`);
   myWebview.executeJavaScript(`i = document.querySelectorAll('.map.custom-map > .map-route > .full-size.img'); if (i) { i.forEach(function(e) { e.classList.remove('bg50pct', 'bg100pct', 'bg80pct', 'bg0pct'); e.classList.add('bg${opacity}pct'); }); }`);
 }
 
-ipcRenderer.on('ignore-mouse', (event, ignoreMouseEvents) => {
-  console.log('Received ignore-mouse', ignoreMouseEvents);
+function doOnIgnoreMouse(ignoreMouseEvents) {
   if (ignoreMouseEventsValue = ignoreMouseEvents) {
     hideElements();
-    myWebview.executeJavaScript("document.querySelector('div.menu-content').click();")
+    closeMenu();
   } else {
-    myWebview.executeJavaScript("b = document.querySelectorAll('.zh-hidden'); if (b) { b.forEach(function(s) {  s.classList.remove('zh-hidden'); }); }");
+    showElements();
   }
+}
+
+ipcRenderer.on('ignore-mouse', (event, ignoreMouseEvents) => {
+  console.log('Received ignore-mouse', ignoreMouseEvents);
+  doOnIgnoreMouse(ignoreMouseEvents)
 })
 
 
 myWebview.addEventListener("did-start-loading", function (e) {
-  if (hasFlag('devtools')) {
+  if (argv.devtools) {
      myWebview.openDevTools();
   }
 });
@@ -97,13 +110,19 @@ myWebview.addEventListener('ipc-message', function(event){
 const regex = {
   world_changed: /https:\/\/www\.zwiftgps\.com\/mapSettings\/\?world=(\d+)/m ,
   profile: /https:\/\/www\.zwiftgps\.com\/profile\// ,
+  host: /https:\/\/www\.zwiftgps\.com\/host\// ,
   svg_roads: /(<g id="roads"[\s\S]*)<g id="livedata"/
 };
 
 myWebview.addEventListener('did-get-response-details', (e) => {
   console.log('Guest page did-get-response-details:', e)
   console.log('Info:', e.newURL)
-  if ((w = regex.profile.exec(e.newURL)) !== null) {
+  if (e.httpResponseCode == 200 && (w = regex.host.exec(e.newURL)) !== null) {
+    // Login screen
+    if (argv.riderid) {
+     myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); if (i) { i.value = ${argv.riderid} };`) 
+    }
+  } else if (e.httpResponseCode == 200 && (w = regex.profile.exec(e.newURL)) !== null) {
     // ZwiftGPS got response from /profile/ URL, so should be able to get riderProfile via preload.js function:
     if (!riderProfile) {
         console.log('HEY! A profile!!!!');
@@ -111,7 +130,7 @@ myWebview.addEventListener('did-get-response-details', (e) => {
         myWebview.executeJavaScript('window.getProfile();')
     }
 
-  } else if ((w = regex.world_changed.exec(e.newURL)) !== null) {
+  } else if (e.httpResponseCode == 200  && (w = regex.world_changed.exec(e.newURL)) !== null) {
     // ZwiftGPS changed the world/map being displayed, so time to manipulate the 
     // route svg
 

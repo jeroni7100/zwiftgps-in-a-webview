@@ -39,6 +39,7 @@ The app supports the following command line arguments:
 
 - `--devtools` - open DevTools for the webview'ed document 
 - `--opacity=<0|50|80|100>` - opacity of the minimap background (default value 0) 
+- `--riderid=<RIDERID>` - rider ID to use in login screen 
 
 Examples:
 

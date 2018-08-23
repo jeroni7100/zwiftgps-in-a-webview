@@ -1,6 +1,6 @@
 {
   "name": "zwiftgps-in-a-webview",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A proof of concept of how to embed ZwiftGPS",
   "main": "main.js",
   "scripts": {
@@ -26,7 +26,6 @@
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "dependencies": {
     "got": "^9.0.0",
-    "has-flag": "^3.0.0",
     "minimist": "^1.2.0"
   }
 }
