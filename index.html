@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ZwiftGPS in a webview</title>
+  </head>
+  <body>
+    <!-- <webview id="foo" disablewebsecurity src="https://www.zwiftgps.com/" style="height: 100vh; " autosize  minwidth="1000" minheight="1000" maxheight="1200"  nodeintegration></webview> -->
+    <webview id="foo"  src="https://www.zwiftgps.com/" style="height: 96vh;" autosize  minwidth="1040" minheight="1000" maxheight="1200"  useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36" preload="./preload.js"  ></webview>
+
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    <!-- We are using Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+
+     -->
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+    
+  </body>
+</html>

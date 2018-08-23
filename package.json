@@ -1,0 +1,32 @@
+{
+  "name": "zwiftgps-in-a-webview",
+  "version": "0.1.0",
+  "description": "A proof of concept of how to embed ZwiftGPS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/electron-quick-start.git"
+  },
+  "keywords": [
+    "Electron",
+    "ZwiftGPS"
+  ],
+  "author": "Jesper Rosenlund Nielsen",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^2.0.6",
+    "electron-rebuild": "^1.8.2"
+  },
+  "bugs": {
+    "url": "https://github.com/electron/electron-quick-start/issues"
+  },
+  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "dependencies": {
+    "got": "^9.0.0",
+    "has-flag": "^3.0.0",
+    "minimist": "^1.2.0"
+  }
+}

@@ -1,0 +1,151 @@
+svg#map-svg {
+    width: 95vw; height: 99vh;
+	margin:0 0 0 0;
+}
+
+div#map {
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+}
+
+body, html {width:100vw; height:100vh; overflow:hidden; margin:0; }
+
+g.pois {
+
+}
+
+.poi.white_line {
+	fill: white ;
+}
+
+.poi.kom {
+}
+
+.poi.sprint {
+}
+
+.poi.lap {
+}
+
+.poi.other {
+}
+
+
+g.rider {
+
+}
+    g.rider text {
+        font-family: Verdana;
+        font-size: 12000px;
+        font-weight: 600;
+        fill: #1192cc;
+    }
+
+    g.rider circle {
+        stroke-width: 2000;
+        stroke: #1192cc;
+        fill: black;
+    }
+
+    g.rider.power-0 circle {
+        fill: #0077BE; /* blue */
+    }
+
+    g.rider.power-1 circle {
+        fill: #90EE90; /* green */
+    }
+
+    g.rider.power-2 circle {
+        fill: #FFEF00; /* yellow */
+    }
+
+    g.rider.power-3 circle {
+        fill: #FF8C00; /* orange */
+    }
+
+    g.rider.power-4 circle {
+        fill: #E03C31; /* red */
+    }
+
+    g.rider.power-5 circle {
+        fill: #FFB0B0; /* white */
+    }
+
+    g.rider.rider-ghost {
+        opacity: 0.5;
+        cursor: default;
+    }
+    g.rider.rider-ghost text {
+        fill: #080808;
+    }
+    g.rider.rider-ghost circle {
+        stroke: #080808;
+    }
+    g.rider.rider-ghost  polyline {
+        stroke-width: 5000;
+        stroke: #080808;
+        fill: none;
+        stroke-linejoin: round;
+    }
+
+
+g.rider.me circle {
+    /* default colour for 'me' */
+    stroke: #ffffff;
+    fill: #000000;
+}    
+
+g.rider.me text {
+    fill: #ffffff;
+}
+
+    g.display-activity circle {
+        opacity: 0.8;
+        fill: #1192cc;
+    }
+        
+    g.display-activity polyline {
+        opacity: 0.5;
+        fill: none;
+        stroke-width: 5000;
+        stroke: #1192cc;
+        stroke-linejoin: round;
+    }
+    
+/*
+g.roads .road {
+	stroke: white !important;
+}
+*/
+
+
+g.roads .roadline {
+	/*stroke: white !important;*/
+	/*stroke: hsla(15, 100%, 50%, 1) !important;*/
+	stroke: #1192cc !important; 
+	stroke: #e35205 !important; 
+}
+
+.altitude_5000 {	stroke: hsla(0, 0%, 100%, 0.02) !important;}
+.altitude_10000 {	stroke: hsla(0, 0%, 100%, 0.06) !important;}
+.altitude_15000 {	stroke: hsla(0, 0%, 100%, 0.10) !important;}
+.altitude_20000 {	stroke: hsla(0, 0%, 100%, 0.14) !important;}
+.altitude_25000 {	stroke: hsla(0, 0%, 100%, 0.18) !important;}
+.altitude_30000 {	stroke: hsla(0, 0%, 100%, 0.22) !important;}
+.altitude_35000 {	stroke: hsla(0, 0%, 100%, 0.26) !important;}
+.altitude_40000 {	stroke: hsla(0, 0%, 100%, 0.30) !important;}
+.altitude_45000 {	stroke: hsla(0, 0%, 100%, 0.34) !important;}
+.altitude_50000 {	stroke: hsla(0, 0%, 100%, 0.38) !important;}
+.altitude_55000 {	stroke: hsla(0, 0%, 100%, 0.42) !important;}
+.altitude_60000 {	stroke: hsla(0, 0%, 100%, 0.46) !important;}
+.altitude_65000 {	stroke: hsla(0, 0%, 100%, 0.50) !important;}
+.altitude_70000 {	stroke: hsla(0, 0%, 100%, 0.54) !important;}
+.altitude_75000 {	stroke: hsla(0, 0%, 100%, 0.58) !important;}
+.altitude_80000 {	stroke: hsla(0, 0%, 100%, 0.62) !important;}
+.altitude_85000 {	stroke: hsla(0, 0%, 100%, 0.66) !important;}
+.altitude_90000 {	stroke: hsla(0, 0%, 100%, 0.70) !important;}
+.altitude_95000 {	stroke: hsla(0, 0%, 100%, 0.74) !important;}
+.altitude_100000 {	stroke: hsla(0, 0%, 100%, 0.78) !important;}
+.altitude_105000 {	stroke: hsla(0, 0%, 100%, 0.82) !important;}
+.altitude_110000 {	stroke: hsla(0, 0%, 100%, 0.86) !important;}
+.altitude_115000 {	stroke: hsla(0, 0%, 100%, 0.90) !important;}
