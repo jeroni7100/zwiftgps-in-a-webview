@@ -3,10 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <title>ZwiftGPS in a webview</title>
+    <style>
+    html {margin: 10px 10px; padding: 0 0; height: 100vh; width: 100vw; overflow: hidden;}
+    body {height: calc(100vh - 20px); width: calc(100vw - 20px); margin: 0 0; padding: 0 0; -webkit-app-region: no-drag; }  
+    html.zh-interactive { height: calc(100vh - 20px); width: calc(100vw - 20px); border: 10px solid orange; margin: 0 0; padding: 0 0; }
+    html.zh-interactive body {-webkit-app-region: drag; background-color: rgba(255,255,255,0.2) }
+    
+    button, input { -webkit-app-region: no-drag; }
+    </style>
   </head>
   <body>
     <!-- <webview id="foo" disablewebsecurity src="https://www.zwiftgps.com/" style="height: 100vh; " autosize  minwidth="1000" minheight="1000" maxheight="1200"  nodeintegration></webview> -->
-    <webview id="foo"  src="https://www.zwiftgps.com/" style="height: 96vh;" autosize  minwidth="1040" minheight="1000" maxheight="1200"  useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36" preload="./preload.js"  ></webview>
+    <webview id="foo"   src="https://www.zwiftgps.com/" style="height: 96vh;" autosize useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36" preload="./preload.js"   ></webview>
 
     <!-- All of the Node.js APIs are available in this renderer process. -->
     <!-- We are using Node.js <script>document.write(process.versions.node)</script>,

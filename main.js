@@ -1,22 +1,34 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, globalShortcut, ipcMain} = require('electron')
+const argv = require('minimist')(process.argv.slice(2));
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-let ignoreMouseEvents = true;
+
+let useMouseToDrag = false;
+let useMouseInZwiftGPS = false;
+
+function ignoreMouseEvents() {
+  return !useMouseToDrag && !useMouseInZwiftGPS
+}
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1000, height: 1000, show: true, alwaysOnTop: true, transparent: true, frame: false, webPreferences: {
+  mainWindow = new BrowserWindow({width: 1000, height: 1000, show: true, alwaysOnTop: true, transparent: true, frame: false, resizable: true,  webPreferences: {
     preload: './preload.js'
     }
     })
 
-  mainWindow.setIgnoreMouseEvents(ignoreMouseEvents);
-  mainWindow.webContents.send('ignore-mouse', ignoreMouseEvents)
+  mainWindow.setIgnoreMouseEvents(ignoreMouseEvents());
 
-
+  mainWindow.webContents.on('dom-ready', function () {
+    // console.log('Event dom-ready catched !!!!')
+    mainWindow.webContents.send('use-mouse-to-drag', useMouseToDrag)
+    mainWindow.webContents.send('use-mouse-in-zwiftgps', useMouseInZwiftGPS)
+  
+  })
+  
   // and load the index.html of the app.
 
   let url = require('url').format({
@@ -34,16 +46,18 @@ function createWindow () {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
+  mainWindow.on('close', function () {
+    if (argv.clearcache) {
+      mainWindow.webContents.session.clearStorageData(function(){console.log('cleared all cookies ');});
+    }
+  })
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
-  })
-
-  mainWindow.on('ready-to-show', function () {
-    console.log('Event show catched !!!!')
   })
   
 }
@@ -54,10 +68,26 @@ function createWindow () {
 /**
  * 
  */
-function actionOnGlobalShortcut () {
-	console.log('Alt+Super+Z is pressed')
-  mainWindow.setIgnoreMouseEvents(ignoreMouseEvents = !ignoreMouseEvents);
-  mainWindow.webContents.send('ignore-mouse', ignoreMouseEvents)
+function actionOnGlobalShortcutS () {
+  console.log('Alt+Super+S is pressed')
+  useMouseInZwiftGPS = !useMouseInZwiftGPS;
+  if (useMouseInZwiftGPS) { useMouseToDrag = false}
+  mainWindow.setIgnoreMouseEvents(ignoreMouseEvents());
+  mainWindow.webContents.send('use-mouse-in-zwiftgps', useMouseInZwiftGPS)
+  mainWindow.webContents.send('use-mouse-to-drag', useMouseToDrag)
+}
+
+
+/**
+ * 
+ */
+function actionOnGlobalShortcutZ () {
+  console.log('Alt+Super+Z is pressed')
+  useMouseToDrag = !useMouseToDrag;
+  if (useMouseToDrag) { useMouseInZwiftGPS = false }
+  mainWindow.setIgnoreMouseEvents(ignoreMouseEvents());
+  mainWindow.webContents.send('use-mouse-to-drag', useMouseToDrag)
+  mainWindow.webContents.send('use-mouse-in-zwiftgps', useMouseInZwiftGPS)
 }
 
 
@@ -70,11 +100,22 @@ function actionOnGlobalShortcut () {
 app.on('ready', () => {
   createWindow()
 
-	  // Register a 'Super+Z' shortcut listener.
-	  let ret = globalShortcut.register('Alt+Super+Z', actionOnGlobalShortcut)
+    let ret
+
+    // Register a 'Alt+Super+Z' shortcut listener
+    // for making window movable and resizable
+	  ret = globalShortcut.register('Alt+Super+Z', actionOnGlobalShortcutZ)
 
 	  if (!ret) {
-	  	console.log('registration failed')
+	  	console.log('registration failed: Alt+Super+Z')
+	  }
+
+    // Register a 'Alt+Super+S' shortcut listener
+    // for accessing ZwiftGPS menu and functions
+	  ret = globalShortcut.register('Alt+Super+S', actionOnGlobalShortcutS)
+
+	  if (!ret) {
+	  	console.log('registration failed: Alt+Super+S')
 	  }
 
 })

@@ -17,7 +17,7 @@
   "author": "Jesper Rosenlund Nielsen",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^2.0.6",
+    "electron": "^2.0.12",
     "electron-rebuild": "^1.8.2"
   },
   "bugs": {

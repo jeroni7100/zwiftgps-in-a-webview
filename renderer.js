@@ -3,16 +3,18 @@
 // All of the Node.js APIs are available in this process.
 
 
-const {ipcRenderer} = require('electron')
+const {ipcRenderer, remote} = require('electron')
 // const hasFlag = require('electron').remote.require('has-flag')
-const argv = require('minimist')(require('electron').remote.process.argv.slice(2));
+const argv = require('minimist')(remote.process.argv.slice(2));
 // console.dir(argv);
 
 var myWebview = document.getElementById('foo');
 
 const got = require('got');
 
-let ignoreMouseEventsValue = true;
+// let ignoreMouseEventsValue = true;
+let useMouseInZwiftGPSValue = false;
+let useMouseToDragValue = false;
 
 let opacity = 0;
 if (argv.opacity) {
@@ -23,36 +25,72 @@ if (argv.opacity) {
 
 let riderProfile
 
+function enableDrag() {
+  document.querySelector('html').classList.add('zh-interactive');
+  document.querySelector('html').classList.remove('zh-click-through');
+}
+
+function disableDrag() {
+  document.querySelector('html').classList.remove('zh-interactive');
+  document.querySelector('html').classList.add('zh-click-through');
+}
 
 function hideElements() {
-  myWebview.executeJavaScript("b = document.querySelectorAll('button.app-button, .ghosts, .info-panel, div.strava-connected'); if (b) {  b.forEach(function(s) { document.querySelector('div.menu-content').click();  s.classList.add('zh-hidden'); }); }");
+  myWebview.executeJavaScript("b = document.querySelectorAll('button.app-button, .ghosts, .info-panel, div.strava-connected'); if (b) {  document.querySelector('div.menu-content').click();  b.forEach(function(s) { s.classList.add('zh-hidden'); }); }");
+  myWebview.executeJavaScript("document.querySelector('body').classList.add('zh-click-through'); document.querySelector('body').classList.remove('zh-interactive');");
 }
 
 function showElements() {
   myWebview.executeJavaScript("b = document.querySelectorAll('.zh-hidden'); if (b) { b.forEach(function(s) {  s.classList.remove('zh-hidden'); }); }");
+  myWebview.executeJavaScript("document.querySelector('body').classList.remove('zh-click-through'); document.querySelector('body').classList.add('zh-interactive');");
 }
 
 function closeMenu() {
   myWebview.executeJavaScript("document.querySelector('div.menu-content').click();")
 }
 
+function changeBackground () {
+  // change background opacity as per configuration (global)
+  opacity = remote.getGlobal('background')
+  if (opacity) {
+    setOpacity(opacity <= 1 ? opacity * 100 : opacity)
+  } 
+} // changeBackground
+
+
+ipcRenderer.on('change-background', (event) => {
+  console.log('change-background')
+  changeBackground()
+})
+
 function setOpacity(opacity) {
   myWebview.executeJavaScript(`console.log(${opacity});`);
-  myWebview.executeJavaScript(`i = document.querySelectorAll('.map.custom-map > .map-route > .full-size.img'); if (i) { i.forEach(function(e) { e.classList.remove('bg50pct', 'bg100pct', 'bg80pct', 'bg0pct'); e.classList.add('bg${opacity}pct'); }); }`);
+  myWebview.executeJavaScript(`i = document.querySelectorAll('.map.custom-map > .map-route > .full-size.img'); if (i) { i.forEach(function(e) { e.classList.remove('bg20pct', 'bg50pct', 'bg100pct', 'bg80pct', 'bg0pct'); e.classList.add('bg${opacity}pct'); }); }`);
 }
 
-function doOnIgnoreMouse(ignoreMouseEvents) {
-  if (ignoreMouseEventsValue = ignoreMouseEvents) {
-    hideElements();
-    closeMenu();
+function doOnUseMouseToDrag(useMouseToDrag) {
+  if (useMouseToDragValue = useMouseToDrag) {
+    enableDrag();
   } else {
-    showElements();
+    disableDrag();
   }
 }
 
-ipcRenderer.on('ignore-mouse', (event, ignoreMouseEvents) => {
-  console.log('Received ignore-mouse', ignoreMouseEvents);
-  doOnIgnoreMouse(ignoreMouseEvents)
+ipcRenderer.on('use-mouse-to-drag', (event, useMouseToDrag) => {
+  doOnUseMouseToDrag(useMouseToDrag)
+})
+
+function doOnUseMouseInZwiftGPS(useMouseInZwiftGPS) {
+  if (useMouseInZwiftGPSValue = useMouseInZwiftGPS) {
+    showElements();
+  } else {
+    hideElements();
+    closeMenu();
+  }
+}
+
+ipcRenderer.on('use-mouse-in-zwiftgps', (event, useMouseInZwiftGPS) => {
+  doOnUseMouseInZwiftGPS(useMouseInZwiftGPS)
 })
 
 
@@ -69,13 +107,19 @@ myWebview.addEventListener("did-start-loading", function (e) {
 myWebview.addEventListener('dom-ready', function (e) {
   console.log('dom-ready');
   
-  myWebview.insertCSS(`.route-line { stroke: none !important; } .zwift-app { background: transparent !important; } .map-attribute {display: none; } .map.custom-map { background: none !important; } .map.custom-map > .map-route > .full-size.img { opacity: ${opacity}; } .bg50pct { opacity: 0.5 !important; } .bg80pct { opacity: 0.8 !important; } .bg100pct { opacity: 1.0 !important; } .bg0pct { opacity: 0 !important; } .zh-hidden { left: -9999px !important; }`);
+  myWebview.insertCSS(`.route-line { stroke: none !important; } .zwift-app { background: transparent !important; } .map-attribute {display: none; } .map.custom-map { background: none !important; } .map.custom-map > .map-route > .full-size.img { opacity: ${opacity}; } .bg20pct { opacity: 0.2 !important; } .bg50pct { opacity: 0.5 !important; } .bg80pct { opacity: 0.8 !important; } .bg100pct { opacity: 1.0 !important; } .bg0pct { opacity: 0 !important; } .zh-hidden { left: -9999px !important; } .cookie-warning.show { display: none; }`);
     
-  let url = 'https://api.zwifthacks.com/zwiftmap/css/world-zwiftgps.css';
+  let url = 'https://api.zwifthacks.com/zwiftmap/css/world-zwiftgps.css?' + Date.now();
   myWebview.executeJavaScript(`head = document.getElementsByTagName('head')[0]; link = document.createElement('link'); link.type = 'text/css'; link.rel = 'stylesheet'; link.href = '${url}'; head.appendChild(link);`);
   
-  if (ignoreMouseEventsValue) {
+  // if (ignoreMouseEventsValue) {
+  if (!useMouseInZwiftGPSValue) {
     hideElements();
+  }
+  if (useMouseToDragValue) {
+    enableDrag();
+  } else {
+    disableDrag();
   }
 
 })
@@ -101,7 +145,7 @@ myWebview.addEventListener('ipc-message', function(event){
     // console.info(event.channel);
     if (event.channel == 'profile') {
       riderProfile = event.args[0]
-      // console.log(riderProfile)
+      console.log(riderProfile)
     }
 });
 
@@ -115,12 +159,12 @@ const regex = {
 };
 
 myWebview.addEventListener('did-get-response-details', (e) => {
-  console.log('Guest page did-get-response-details:', e)
-  console.log('Info:', e.newURL)
+  // console.log('Guest page did-get-response-details:', e)
+  // console.log('Info:', e.newURL)
   if (e.httpResponseCode == 200 && (w = regex.host.exec(e.newURL)) !== null) {
     // Login screen
     if (argv.riderid) {
-     myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); if (i) { i.value = ${argv.riderid} };`) 
+     myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); s = document.querySelector('input[value="Log in" i]'); if (i) { lastval = i.value; i.value = ${argv.riderid}; i._valueTracker.setValue(lastval); i.dispatchEvent(new Event('input', { bubbles: true })); if (s) s.click(); }`) 
     }
   } else if (e.httpResponseCode == 200 && (w = regex.profile.exec(e.newURL)) !== null) {
     // ZwiftGPS got response from /profile/ URL, so should be able to get riderProfile via preload.js function:
@@ -135,6 +179,7 @@ myWebview.addEventListener('did-get-response-details', (e) => {
     // route svg
 
     let world = w[1];
+    if (world == 8) world = 4;
     console.log('World:', world);
 
     // request svg map from zh (promise)
@@ -163,10 +208,15 @@ myWebview.addEventListener('did-get-response-details', (e) => {
     });
 
     // hide UI elements if in ignoreMouseEvents / overlay mode
-    if (ignoreMouseEventsValue) {
+    // if (ignoreMouseEventsValue) {
+    if (!useMouseInZwiftGPSValue) {
         hideElements();
     }
-
+    if (useMouseToDragValue) {
+      enableDrag();
+    } else {
+      disableDrag();
+    }
 
   }
 })
