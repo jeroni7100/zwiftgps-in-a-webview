@@ -1,6 +1,6 @@
 {
   "name": "zwiftgps-in-a-webview",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A proof of concept of how to embed ZwiftGPS",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/jeroni7100/zwiftgps-in-a-webview.git"
   },
   "keywords": [
     "Electron",
@@ -21,9 +21,9 @@
     "electron-rebuild": "^1.8.2"
   },
   "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
+    "url": "https://github.com/jeroni7100/zwiftgps-in-a-webview/issues"
   },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "homepage": "https://github.com/jeroni7100/zwiftgps-in-a-webview",
   "dependencies": {
     "got": "^9.0.0",
     "minimist": "^1.2.0"
