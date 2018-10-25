@@ -4,9 +4,7 @@
 
 
 const {ipcRenderer, remote} = require('electron')
-// const hasFlag = require('electron').remote.require('has-flag')
 const argv = require('minimist')(remote.process.argv.slice(2));
-// console.dir(argv);
 
 var myWebview = document.getElementById('foo');
 
@@ -180,8 +178,8 @@ function processRequest(httpResponseCode, newURL) {
   // console.log('Info:', newURL)
   if (httpResponseCode == 200 && (w = regex.host.exec(newURL)) !== null) {
     // Login screen
-    if (argv.riderid) {
-     myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); s = document.querySelector('input[value="Log in" i]'); if (i) { lastval = i.value; i.value = ${argv.riderid}; i._valueTracker.setValue(lastval); i.dispatchEvent(new Event('input', { bubbles: true })); if (s) s.click(); }`) 
+    if (argv.riderid || remote.getGlobal('riderid')) {
+     myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); s = document.querySelector('input[value="Log in" i]'); if (i) { lastval = i.value; i.value = ${argv.riderid || remote.getGlobal('riderid')}; i._valueTracker.setValue(lastval); i.dispatchEvent(new Event('input', { bubbles: true })); if (s) s.click(); }`) 
     }
   } else if (httpResponseCode == 200 && (w = regex.profile.exec(newURL)) !== null) {
     // ZwiftGPS got response from /profile/ URL, so should be able to get riderProfile via preload.js function:
