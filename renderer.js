@@ -158,15 +158,32 @@ const regex = {
   svg_roads: /(<g id="roads"[\s\S]*)<g id="livedata"/
 };
 
-myWebview.addEventListener('did-get-response-details', (e) => {
+// Catch webrequests to e.g. handle change of world 
+const filter = {
+  urls: ['https://*.zwiftgps.com/*']
+}
+
+remote.session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+  console.log(details.url, details.statusCode)
+  processRequest(details.statusCode, details.url)
+  callback({ cancel: false })
+})
+
+// Does not work in Electron 3
+// myWebview.addEventListener('did-get-response-details', (e) => {
+//   processRequest(e.httpResponseCode, e.newURL)
+// })
+
+
+function processRequest(httpResponseCode, newURL) {
   // console.log('Guest page did-get-response-details:', e)
-  // console.log('Info:', e.newURL)
-  if (e.httpResponseCode == 200 && (w = regex.host.exec(e.newURL)) !== null) {
+  // console.log('Info:', newURL)
+  if (httpResponseCode == 200 && (w = regex.host.exec(newURL)) !== null) {
     // Login screen
     if (argv.riderid) {
      myWebview.executeJavaScript(`i = document.querySelector('input#riderid'); s = document.querySelector('input[value="Log in" i]'); if (i) { lastval = i.value; i.value = ${argv.riderid}; i._valueTracker.setValue(lastval); i.dispatchEvent(new Event('input', { bubbles: true })); if (s) s.click(); }`) 
     }
-  } else if (e.httpResponseCode == 200 && (w = regex.profile.exec(e.newURL)) !== null) {
+  } else if (httpResponseCode == 200 && (w = regex.profile.exec(newURL)) !== null) {
     // ZwiftGPS got response from /profile/ URL, so should be able to get riderProfile via preload.js function:
     if (!riderProfile) {
         console.log('HEY! A profile!!!!');
@@ -174,7 +191,7 @@ myWebview.addEventListener('did-get-response-details', (e) => {
         myWebview.executeJavaScript('window.getProfile();')
     }
 
-  } else if (e.httpResponseCode == 200  && (w = regex.world_changed.exec(e.newURL)) !== null) {
+  } else if (httpResponseCode == 200  && (w = regex.world_changed.exec(newURL)) !== null) {
     // ZwiftGPS changed the world/map being displayed, so time to manipulate the 
     // route svg
 
@@ -219,4 +236,6 @@ myWebview.addEventListener('did-get-response-details', (e) => {
     }
 
   }
-})
+
+}
+

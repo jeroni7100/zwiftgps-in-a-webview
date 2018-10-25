@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, globalShortcut, ipcMain} = require('electron')
+const {app, BrowserWindow, globalShortcut, ipcMain, session } = require('electron')
 const argv = require('minimist')(process.argv.slice(2));
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -12,6 +12,8 @@ let useMouseInZwiftGPS = false;
 function ignoreMouseEvents() {
   return !useMouseToDrag && !useMouseInZwiftGPS
 }
+
+
 
 function createWindow () {
   // Create the browser window.
@@ -117,6 +119,18 @@ app.on('ready', () => {
 	  if (!ret) {
 	  	console.log('registration failed: Alt+Super+S')
 	  }
+
+    // Commented out - this is now done directely in renderer via remote
+    // Catch webrequests to e.g. handle change of world in renderer
+    // const filter = {
+    //   urls: ['https://*.zwiftgps.com/*']
+    // }
+
+    // session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+    //   console.log(details.url, details.statusCode)
+    //   mainWindow.webContents.send('do-on-headers-received', details)
+    //   callback({ cancel: false })
+    // })
 
 })
 
