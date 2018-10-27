@@ -5,7 +5,8 @@
 
 const {ipcRenderer, remote} = require('electron')
 const argv = require('minimist')(remote.process.argv.slice(2));
-
+const fs = require('fs')
+const path = require('path')
 var myWebview = document.getElementById('foo');
 
 const got = require('got');
@@ -106,9 +107,16 @@ myWebview.addEventListener('dom-ready', function (e) {
   console.log('dom-ready');
   
   myWebview.insertCSS(`.route-line { stroke: none !important; } .zwift-app { background: transparent !important; } .map-attribute {display: none; } .map.custom-map { background: none !important; } .map.custom-map > .map-route > .full-size.img { opacity: ${opacity}; } .bg20pct { opacity: 0.2 !important; } .bg50pct { opacity: 0.5 !important; } .bg80pct { opacity: 0.8 !important; } .bg100pct { opacity: 1.0 !important; } .bg0pct { opacity: 0 !important; } .zh-hidden { left: -9999px !important; } .cookie-warning.show { display: none; }`);
-    
-  let url = 'https://api.zwifthacks.com/zwiftmap/css/world-zwiftgps.css?' + Date.now();
-  myWebview.executeJavaScript(`head = document.getElementsByTagName('head')[0]; link = document.createElement('link'); link.type = 'text/css'; link.rel = 'stylesheet'; link.href = '${url}'; head.appendChild(link);`);
+  
+  try {
+    let css = fs.readFileSync(path.join(__dirname, 'world-zwiftgps.css'))
+    if (css) myWebview.insertCSS(css.toString())
+  } catch (e) {}
+
+  // myWebview.executeJavaScript('window.injectStyleLink("https://api.zwifthacks.com/zwiftmap/css/world-zwiftgps.css");')
+  
+  // let url = 'https://api.zwifthacks.com/zwiftmap/css/world-zwiftgps.css?' + Date.now();
+  // myWebview.executeJavaScript(`head = document.getElementsByTagName('head')[0]; link = document.createElement('link'); link.type = 'text/css'; link.rel = 'stylesheet'; link.href = '${url}'; head.appendChild(link);`);
   
   // if (ignoreMouseEventsValue) {
   if (!useMouseInZwiftGPSValue) {

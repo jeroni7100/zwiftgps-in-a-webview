@@ -7,7 +7,6 @@ window.sendToElectron= function (channel) {
   ipcRenderer.send(channel)
 }
 
-
 window.getProfile= function () {
     // got(`https://www.zwiftgps.com/profile/`).then(response => {
     //     console.log(response);
@@ -37,3 +36,9 @@ window.loadDoc= function (url, channel) {
 //     document.getElementById("demo").innerHTML =
 //     xhttp.responseText;
 //   }
+
+
+
+window.injectStyleLink= function (url) {
+    head = document.getElementsByTagName('head')[0]; link = document.createElement('link'); link.type = 'text/css'; link.rel = 'stylesheet'; link.href = url; head.appendChild(link);
+}
