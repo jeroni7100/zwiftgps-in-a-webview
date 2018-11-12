@@ -67,6 +67,12 @@ function setOpacity(opacity) {
   myWebview.executeJavaScript(`i = document.querySelectorAll('.map.custom-map > .map-route > .full-size.img'); if (i) { i.forEach(function(e) { e.classList.remove('bg20pct', 'bg50pct', 'bg100pct', 'bg80pct', 'bg0pct'); e.classList.add('bg${opacity}pct'); }); }`);
 }
 
+function setZoom(zoom) {
+  // myWebview.executeJavaScript(`console.log(${zoom});`);
+  // myWebview.executeJavaScript(`i = document.querySelectorAll('.zoom-area'); if (i) { i.forEach(function(e) { e.classList.remove('bg20pct', 'bg50pct', 'bg100pct', 'bg80pct', 'bg0pct'); e.classList.add('bg${opacity}pct'); }); }`);
+  // i.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
 function doOnUseMouseToDrag(useMouseToDrag) {
   if (useMouseToDragValue = useMouseToDrag) {
     enableDrag();
@@ -169,7 +175,8 @@ const filter = {
   urls: ['https://*.zwiftgps.com/*']
 }
 
-remote.session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+// remote.session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+remote.session.fromPartition('zwiftgps').webRequest.onHeadersReceived(filter, (details, callback) => {
   console.log(details.url, details.statusCode)
   processRequest(details.statusCode, details.url)
   callback({ cancel: false })

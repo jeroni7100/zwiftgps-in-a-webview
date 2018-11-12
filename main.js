@@ -17,10 +17,16 @@ function ignoreMouseEvents() {
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1000, height: 1000, show: true, alwaysOnTop: true, transparent: true, frame: false, resizable: true,  webPreferences: {
+  mainWindow = new BrowserWindow({width: 1000, height: 1000, show: false, alwaysOnTop: true, transparent: true, frame: false, resizable: true,  webPreferences: {
+    partition: 'zwiftgps',
     preload: './preload.js'
     }
     })
+
+  mainWindow.once('ready-to-show', () => {
+    console.log(`Event ready-to-show`)
+    mainWindow.show()
+  })
 
   mainWindow.setIgnoreMouseEvents(ignoreMouseEvents());
 
